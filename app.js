@@ -207,63 +207,104 @@
   }
 
   // ---------- loading icons: calm -> chaotic ----------
-  // A single quiet spinner while calm; a drifting few when anxious;
-  // a storm of glowing, spinning icons when the deadline hits.
+  // Two flat, monochrome spinners only (no glow, no colours):
+  // a chasing-dots ring and an iOS-style 12-spoke wheel.
+  // One quiet spinner while calm; a drifting few when anxious;
+  // a storm of them when the deadline hits.
   let spinnerLayer = null;
   let spinnerTimer = null;
 
-  const SPINNER_TYPES = ['ring', 'dots', 'bars', 'ball', 'hour'];
+  const SPINNER_TYPES = ['dots', 'spokes'];
 
   const SPINNER_PHASES = {
-    calm:    { interval: 0,    size: [18, 26], dur: [2.8, 3.8], types: ['ring'],                 color: '#831135', track: 'rgba(131,17,53,.14)', opacity: 0.55, glow: false, driftY: [-30, -50] },
-    anxious: { interval: 1500, size: [20, 42], dur: [1.2, 2.2], types: ['ring', 'dots', 'hour'], color: '#a13d3d', track: 'rgba(161,61,61,.16)', opacity: 0.8,  glow: false, driftY: [-140, -60] },
-    deadline:{ interval: 300,  size: [22, 96], dur: [0.25, 0.7], types: SPINNER_TYPES,          color: '#e05252', track: 'rgba(224,82,82,.2)',  opacity: 1,    glow: true,  driftY: [-240, 240] }
+    calm:    { interval: 0,    size: [14, 18], dur: [1.2, 1.2], life: [0, 0],     types: ['spokes'],       colors: ['#8a97a0'], opacity: 0.6 },
+    anxious: { interval: 1800, size: [22, 44], dur: [0.9, 1.3], life: [3.5, 5],   types: ['dots', 'spokes'], colors: ['#2d3b45', '#5c6a75'], opacity: 0.85 },
+    deadline:{ interval: 260,  size: [24, 260], dur: [0.5, 1.1], life: [2.6, 4.6], types: SPINNER_TYPES,   colors: ['#f0e9e0', '#ffffff', '#c7cdd1'], opacity: 0.92 }
   };
 
   function rand(min, max) { return min + Math.random() * (max - min); }
 
+  // Spinner markup. 'dots' = ring of 12 dots, biggest/darkest first, trailing smaller & lighter.
+  // 'spokes' = 12 rounded spokes with a fading opacity trail (iOS style).
+  function spinnerMarkup(type) {
+    var cls = type === 'dots' ? 'sp-dots' : 'sp-spokes';
+    var html = '<span class="' + cls + '">';
+    for (var i = 0; i < 12; i++) {
+      // dots: the head is biggest/darkest, trail shrinks & fades behind it;
+      // spokes: plain fading opacity trail, nothing else
+      var r = -i * 30;
+      var o = Math.max(0.12, 1 - i * 0.078);
+      var k = (1 - i * 0.06).toFixed(2);
+      html += '<i style="--r:' + r + 'deg;--o:' + o.toFixed(2) + ';--k:' + k + '"></i>';
+    }
+    return html + '</span>';
+  }
+
   function buildSpinnerEl(type, cfg) {
-    const wrap = document.createElement('div');
-    wrap.className = 'fx-sp' + (cfg.glow ? ' glow' : '');
-    wrap.style.left = rand(4, 92) + '%';
-    wrap.style.top = rand(8, 86) + '%';
+    var wrap = document.createElement('div');
+    wrap.className = 'fx-sp';
+    wrap.style.left = rand(-2, 94) + '%';
+    wrap.style.top = rand(2, 92) + '%';
     wrap.style.setProperty('--s', Math.round(rand(cfg.size[0], cfg.size[1])) + 'px');
     wrap.style.setProperty('--d', rand(cfg.dur[0], cfg.dur[1]).toFixed(2) + 's');
-    wrap.style.setProperty('--fd', rand(5, 9).toFixed(2) + 's');
+    wrap.style.setProperty('--fd', rand(cfg.life[0], cfg.life[1]).toFixed(2) + 's');
     wrap.style.setProperty('--fo', cfg.opacity);
-    wrap.style.setProperty('--fxr', Math.round(rand(-160, 160)) + 'px');
-    wrap.style.setProperty('--fyr', Math.round(rand(cfg.driftY[0], cfg.driftY[1])) + 'px');
-    wrap.style.setProperty('--sp-c', cfg.color);
-    wrap.style.setProperty('--sp-track', cfg.track);
-
-    if (type === 'ring') wrap.innerHTML = '<span class="sp-ring"></span>';
-    else if (type === 'dots') wrap.innerHTML = '<span class="sp-dots">' + '<i></i>'.repeat(8) + '</span>';
-    else if (type === 'bars') wrap.innerHTML = '<span class="sp-bars">' + '<i></i>'.repeat(5) + '</span>';
-    else if (type === 'ball') wrap.innerHTML = '<span class="sp-ball"></span>';
-    else wrap.innerHTML = '<span class="sp-hour">\u23F3</span>';
-
-    if (type === 'dots') {
-      wrap.querySelectorAll('.sp-dots i').forEach((d, i) => d.style.setProperty('--r', i * 45 + 'deg'));
-    }
-    if (type === 'bars') {
-      wrap.querySelectorAll('.sp-bars i').forEach((b, i) => b.style.animationDelay = i * 0.12 + 's');
-    }
+    wrap.style.setProperty('--sp-c', cfg.colors[Math.floor(Math.random() * cfg.colors.length)]);
+    wrap.innerHTML = spinnerMarkup(type);
     return wrap;
+  }
+
+  // Deadline only: a cluttered pile of fake system windows, each with a plain spinner inside
+  var WIN_TEXTS = [
+    'Loading data...', 'Please wait...', 'Still loading...', 'Not responding',
+    'Do not close this window', 'Installing updates... 99%', 'Task postponed', 'Almost there...'
+  ];
+
+  function buildWindowEl() {
+    var w = document.createElement('div');
+    w.className = 'fx-win';
+    var width = Math.round(rand(170, 330));
+    w.style.left = rand(-3, 88) + '%';
+    w.style.top = rand(3, 86) + '%';
+    w.style.setProperty('--ww', width + 'px');
+    w.style.setProperty('--fd', rand(3, 5.5).toFixed(2) + 's');
+    w.style.setProperty('--rot', rand(-3, 3).toFixed(1) + 'deg');
+    w.style.setProperty('--s', Math.round(rand(18, 26)) + 'px');
+    w.style.setProperty('--sp-c', Math.random() < 0.5 ? '#2d3b45' : '#5c6a75');
+    var title = ['Loading', 'Please Wait', 'Submission Portal', 'Not Responding', 'System'][Math.floor(Math.random() * 5)];
+    w.innerHTML =
+      '<div class="fx-win-title"><span>' + title + '</span><b>_</b><b>\u25A1</b><b>x</b></div>' +
+      '<div class="fx-win-body">' + spinnerMarkup(Math.random() < 0.5 ? 'dots' : 'spokes') +
+      '<span class="fx-win-text">' + WIN_TEXTS[Math.floor(Math.random() * WIN_TEXTS.length)] + '</span></div>' +
+      '<div class="fx-win-bar"><i></i></div>';
+    return w;
+  }
+
+  function spawnRetroWindow() {
+    if (!spinnerLayer) return;
+    if (spinnerLayer.querySelectorAll('.fx-win').length >= 10) return;
+    var win = buildWindowEl();
+    spinnerLayer.appendChild(win);
+    setTimeout(function () { win.remove(); }, 5600);
   }
 
   function spawnSpinner(phase) {
     if (!spinnerLayer) return;
-    const cap = phase === 'deadline' ? 46 : 14;
+    var cap = phase === 'deadline' ? 60 : 12;
     if (spinnerLayer.children.length >= cap) return;
-    const cfg = SPINNER_PHASES[phase];
-    const type = cfg.types[Math.floor(Math.random() * cfg.types.length)];
-    const wrap = buildSpinnerEl(type, cfg);
+    var cfg = SPINNER_PHASES[phase];
+    if (phase === 'deadline' && Math.random() < 0.35) {
+      spawnRetroWindow();
+      return;
+    }
+    var type = cfg.types[Math.floor(Math.random() * cfg.types.length)];
+    var wrap = buildSpinnerEl(type, cfg);
     if (phase === 'calm') {
       wrap.className = 'fx-sp calm';
       wrap.style.left = '';
       wrap.style.top = '';
     } else {
-      setTimeout(() => wrap.remove(), Math.round(rand(3200, 5200)));
+      setTimeout(function () { wrap.remove(); }, Math.round(cfg.life[1] * 1000) + 200);
     }
     spinnerLayer.appendChild(wrap);
   }
@@ -279,18 +320,27 @@
       return;
     }
     if (phase === 'anxious') {
-      const calm = spinnerLayer.querySelector('.calm');
+      var calm = spinnerLayer.querySelector('.calm');
       if (calm) calm.remove();
     }
     spawnSpinner(phase);
-    spinnerTimer = setInterval(() => spawnSpinner(phase), SPINNER_PHASES[phase].interval);
+    if (phase === 'deadline') {
+      // land in a pile straight away
+      for (var n = 0; n < 12; n++) setTimeout(function () { spawnSpinner('deadline'); }, n * 60);
+    }
+    spinnerTimer = setInterval(function () {
+      spawnSpinner(phase);
+      if (phase === 'deadline') { spawnSpinner(phase); spawnSpinner(phase); }
+    }, SPINNER_PHASES[phase].interval);
   }
 
   function spinnerBurst() {
-    for (let i = 0; i < 26; i++) setTimeout(() => spawnSpinner('deadline'), i * 45);
+    for (var i = 0; i < 40; i++) setTimeout(function () { spawnSpinner('deadline'); }, i * 35);
   }
 
   function clearSpinners() {
+    if (spinnerTimer) clearInterval(spinnerTimer);
+    spinnerTimer = null;
     if (spinnerLayer) spinnerLayer.innerHTML = '';
   }
 
@@ -306,8 +356,9 @@
     startTicking();
     clearInterval(chaosTimer);
     chaosTimer = setInterval(() => {
-      randomPopup();
-      if (Math.random() < 0.4) randomPopup();
+      spawnRetroWindow();
+      if (Math.random() < 0.4) spawnRetroWindow();
+      if (Math.random() < 0.3) randomPopup();
     }, 700);
   }
 
@@ -349,6 +400,10 @@
   }
 
   function startChaos() {
+    // ambient toasts for the calm phase only — never overwrite the
+    // deadline window-spawner that already owns chaosTimer
+    if (document.body.classList.contains('deadline')) return;
+    clearInterval(chaosTimer);
     chaosTimer = setInterval(randomPopup, 2200);
   }
 
@@ -376,8 +431,8 @@
     updateLoading(100, 'All tasks completed');
 
     // storm of pop-ups resolving into nothing
-    const storm = setInterval(randomPopup, 120);
-    setTimeout(() => clearInterval(storm), 900);
+    const storm = setInterval(spawnRetroWindow, 130);
+    setTimeout(() => clearInterval(storm), 1000);
     spinnerBurst();
 
     document.body.classList.remove('anxious');
@@ -388,6 +443,7 @@
         els.finalScreen.classList.remove('hidden');
         if (els.chatBubble) els.chatBubble.classList.add('hidden');
         if (els.countdown) els.countdown.classList.add('hidden');
+        if (els.chaosLayer) els.chaosLayer.innerHTML = '';
         clearSpinners();
       }, 1600);
     } else {
@@ -475,5 +531,8 @@
     startCountdown();
     startChaos();
     scheduleIdleThoughts();
+    // if we landed straight into the deadline phase, startCountdown already
+    // handed chaosTimer to the window-spawner and startChaos left it alone —
+    // nothing more to do here
   }
 })();

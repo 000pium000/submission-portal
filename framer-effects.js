@@ -87,34 +87,42 @@
     'body.fx-deadline #fx-loading-fill{background:#e05252}',
     'body.fx-deadline #fx-loading-text{color:#8f8474}',
 
-    /* 結局畫面：浮動卡片，頁面在背後保持可見 */
-    '#fx-final{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 48px));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:42px 36px;background:#17130f;color:#f0e9e0;border-radius:6px;box-shadow:0 24px 80px rgba(0,0,0,.45);z-index:100;animation:fx-final-in .5s ease}',
-    '@keyframes fx-final-in{from{opacity:0;transform:translate(-50%,-50%) scale(.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}',
-    '#fx-final .fx-kicker{font:400 11px/1.6 Lato,Arial,sans-serif;text-transform:uppercase;letter-spacing:.18em;color:#8f8474;margin-bottom:14px}',
-    '#fx-final h1{font:900 clamp(2.6rem,6vw,4rem)/1 Lato,"Helvetica Neue",Arial,sans-serif;margin-bottom:14px}',
-    '#fx-final .fx-question{font:italic 400 18px/1.5 Lato,Arial,sans-serif;color:#d9cdbd;margin-bottom:26px}',
-    '#fx-final .fx-reflection{font:400 14px/1.8 Lato,Arial,sans-serif;color:#8f8474;margin-bottom:32px}',
-    '#fx-restart{padding:11px 30px;background:#f0e9e0;color:#17130f;border:none;border-radius:3px;font:700 14px/1 Lato,Arial,sans-serif;cursor:pointer;transition:opacity .18s,transform .18s}',
-    '#fx-restart:hover{opacity:.85;transform:translateY(-1px)}',
+    /* 結局畫面：沿用頁面本身的 Canvas 卡片格式（白底、細邊框、栗紅標題列、栗紅按鈕） */
+    '#fx-final{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(520px,calc(100vw - 48px));background:#fff;color:#2d3b45;border:1px solid #c7cdd1;border-radius:4px;box-shadow:0 12px 32px rgba(23,19,15,.25);overflow:hidden;text-align:left;z-index:100;animation:fx-final-in .3s cubic-bezier(.16,1,.3,1);font-family:Lato,\"Helvetica Neue\",Arial,sans-serif}',
+    '@keyframes fx-final-in{from{opacity:0;transform:translate(-50%,-46%)}to{opacity:1;transform:translate(-50%,-50%)}}',
+    '#fx-final .fx-kicker{display:flex;align-items:center;min-height:52px;padding:12px 20px;margin:0;background:#831135;color:#fff;font:700 16px/1.4 Lato,Arial,sans-serif}',
+    '#fx-final h1{padding:22px 20px 0;margin:0;font:700 28px/1.2 Lato,\"Helvetica Neue\",Arial,sans-serif;color:#2d3b45}',
+    '#fx-final .fx-question{padding:8px 20px 0;margin:0;font:700 15px/1.5 Lato,Arial,sans-serif;color:#2d3b45}',
+    '#fx-final .fx-reflection{padding:10px 20px 0;margin:0;font:400 14px/1.6 Lato,Arial,sans-serif;color:#5c6a75}',
+    '#fx-restart{display:inline-block;margin:20px;padding:9px 22px;background:#831135;color:#fff;border:none;border-radius:3px;font:700 14px/1.4 Lato,Arial,sans-serif;cursor:pointer;transition:background .18s}',
+    '#fx-restart:hover{background:#5f0c26}',
 
-    /* Loading icons: calm -> chaotic */
+    /* Loading icons：只保留兩種極簡單色款（點環 / 12 條輻射細條） */
     '#fx-spinner-layer{position:fixed;inset:0;pointer-events:none;z-index:45;overflow:hidden}',
-    '.fx-sp{position:absolute;animation:fx-float var(--fd,8s) linear forwards}',
-    '@keyframes fx-float{0%{opacity:0;transform:translate(0,0)}15%{opacity:var(--fo,1)}85%{opacity:var(--fo,1)}100%{opacity:0;transform:translate(var(--fxr,0px),var(--fyr,-90px))}}',
+    '.fx-sp{position:absolute;opacity:0;animation:fx-float var(--fd,4s) ease-in-out forwards}',
+    '@keyframes fx-float{0%{opacity:0}12%{opacity:var(--fo,1)}85%{opacity:var(--fo,1)}100%{opacity:0}}',
     '@keyframes fx-spin{to{transform:rotate(360deg)}}',
-    '@keyframes fx-breathe{0%,100%{opacity:.4;transform:scale(.94)}50%{opacity:.8;transform:scale(1)}}',
-    '@keyframes fx-wave{0%,100%{height:30%}50%{height:100%}}',
-    '.fx-sp.calm{position:fixed;left:28px;bottom:132px;animation:fx-breathe 3.2s ease-in-out infinite}',
-    '.fx-sp .sp-ring{display:block;width:var(--s);height:var(--s);border-radius:50%;border:calc(var(--s)*0.11) solid var(--sp-track,rgba(45,59,69,.15));border-top-color:var(--sp-c,#831135);animation:fx-spin var(--d,1.5s) linear infinite}',
-    '.fx-sp .sp-dots{position:relative;display:block;width:var(--s);height:var(--s);animation:fx-spin var(--d,1.5s) linear infinite}',
-    '.fx-sp .sp-dots i{position:absolute;top:50%;left:50%;width:calc(var(--s)*0.15);height:calc(var(--s)*0.15);margin:calc(var(--s)*-0.075) 0 0 calc(var(--s)*-0.075);border-radius:50%;background:var(--sp-c,#831135);transform:rotate(var(--r,0deg)) translateY(calc(var(--s)*-0.4))}',
-    '.fx-sp .sp-bars{display:flex;align-items:flex-end;gap:calc(var(--s)*0.14);height:var(--s)}',
-    '.fx-sp .sp-bars i{width:calc(var(--s)*0.13);height:100%;border-radius:2px;background:var(--sp-c,#831135);animation:fx-wave var(--d,1.2s) ease-in-out infinite}',
-    '.fx-sp .sp-ball{display:block;width:var(--s);height:var(--s);border-radius:50%;background:conic-gradient(#e05252 0 45deg,#f0a742 45deg 90deg,#4cc26b 90deg 135deg,#4c9fe0 135deg 180deg,#b48ce0 180deg 225deg,#e0c84c 225deg 270deg,#e05a9d 270deg 315deg,#6bd6c8 315deg 360deg);animation:fx-spin var(--d,.6s) linear infinite}',
-    '.fx-sp .sp-hour{display:block;font-size:var(--s);line-height:1;animation:fx-spin var(--d,1.5s) linear infinite}',
-    '.fx-sp.glow .sp-ring,.fx-sp.glow .sp-ball,.fx-sp.glow .sp-bars i,.fx-sp.glow .sp-dots i{box-shadow:0 0 calc(var(--s)*0.3) rgba(224,82,82,.5)}',
+    '.fx-sp.calm{position:fixed;left:28px;bottom:132px;opacity:var(--fo,.6);animation:none}',
+    '.fx-sp .sp-dots,.fx-sp .sp-spokes,.fx-win .sp-dots,.fx-win .sp-spokes{position:relative;display:block;flex:none;width:var(--s);height:var(--s)}',
+    '.sp-dots{animation:fx-spin var(--d,1s) linear infinite}',
+    '.sp-spokes{animation:fx-spin var(--d,1s) steps(12) infinite}',
+    '.sp-dots i{position:absolute;top:50%;left:50%;width:calc(var(--s)*0.19*var(--k,1));height:calc(var(--s)*0.19*var(--k,1));margin:calc(var(--s)*-0.095*var(--k,1)) 0 0 calc(var(--s)*-0.095*var(--k,1));border-radius:50%;background:var(--sp-c,#2d3b45);opacity:var(--o,1);transform:rotate(var(--r,0deg)) translateY(calc(var(--s)*-0.4))}',
+    '.sp-spokes i{position:absolute;top:0;left:50%;width:calc(var(--s)*0.09);height:calc(var(--s)*0.26);margin-left:calc(var(--s)*-0.045);border-radius:999px;background:var(--sp-c,#2d3b45);opacity:var(--o,1);transform-origin:50% calc(var(--s)*0.5);transform:rotate(var(--r,0deg))}',
 
-    '@media (prefers-reduced-motion: reduce){body.fx-anxious,body.fx-deadline{animation:none!important}.fx-sp{animation:none!important}}'
+    /* 死線時的雜亂：一堆疊在一起的復古系統視窗，裡面是素色 spinner */
+    '.fx-win{position:absolute;width:var(--ww,240px);background:#ece9d8;border:1px solid #0a3cb0;border-radius:7px 7px 0 0;box-shadow:3px 3px 0 rgba(0,0,0,.35);font:11px/1.3 Tahoma,Verdana,Arial,sans-serif;color:#000;transform:rotate(var(--rot,0deg));opacity:0;animation:fx-win-life var(--fd,4s) steps(8) forwards}',
+    '@keyframes fx-win-life{0%{opacity:0}6%{opacity:1}92%{opacity:1}100%{opacity:0}}',
+    '.fx-win-title{display:flex;align-items:center;gap:2px;padding:3px 4px 3px 8px;border-radius:6px 6px 0 0;background:linear-gradient(#0058e6,#3a93ff 8%,#0058e6 40%,#0049c4 88%,#0a3cb0);color:#fff;font-weight:700}',
+    '.fx-win-title span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+    '.fx-win-title b{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border:1px solid #fff;border-radius:3px;background:#2f6fe0;font-size:10px;line-height:1}',
+    '.fx-win-title b:last-child{background:#d8472b}',
+    '.fx-win-body{display:flex;align-items:center;gap:10px;padding:12px 12px 8px}',
+    '.fx-win-text{white-space:nowrap}',
+    '.fx-win-bar{height:12px;margin:0 12px 12px;border:1px solid #7f9db9;background:#fff;overflow:hidden}',
+    '.fx-win-bar i{display:block;width:45%;height:100%;background:repeating-linear-gradient(90deg,#2f9a2f 0 7px,transparent 7px 9px);animation:fx-bar 1.4s linear infinite}',
+    '@keyframes fx-bar{from{transform:translateX(-60%)}to{transform:translateX(240%)}}',
+
+    '@media (prefers-reduced-motion: reduce){body.fx-anxious,body.fx-deadline{animation:none!important}.fx-sp,.fx-win{animation:none!important}}'
   ].join('\n');
   var styleEl = document.createElement('style');
   styleEl.textContent = css;
@@ -267,48 +275,89 @@
 
   // ---------- Loading icons: calm -> chaotic ----------
   var spinnerTimer = null;
-  var SPINNER_TYPES = ['ring', 'dots', 'bars', 'ball', 'hour'];
+  var SPINNER_TYPES = ['dots', 'spokes'];
 
   var SPINNER_PHASES = {
-    calm:    { interval: 0,    size: [18, 26], dur: [2.8, 3.8], types: ['ring'],                 color: '#831135', track: 'rgba(131,17,53,.14)', opacity: 0.55, glow: false, driftY: [-30, -50] },
-    anxious: { interval: 1500, size: [20, 42], dur: [1.2, 2.2], types: ['ring', 'dots', 'hour'], color: '#a13d3d', track: 'rgba(161,61,61,.16)', opacity: 0.8,  glow: false, driftY: [-140, -60] },
-    deadline:{ interval: 300,  size: [22, 96], dur: [0.25, 0.7], types: SPINNER_TYPES,          color: '#e05252', track: 'rgba(224,82,82,.2)',  opacity: 1,    glow: true,  driftY: [-240, 240] }
+    calm:    { interval: 0,    size: [14, 18], dur: [1.2, 1.2], life: [0, 0],     types: ['spokes'],         colors: ['#8a97a0'], opacity: 0.6 },
+    anxious: { interval: 1800, size: [22, 44], dur: [0.9, 1.3], life: [3.5, 5],   types: ['dots', 'spokes'], colors: ['#2d3b45', '#5c6a75'], opacity: 0.85 },
+    deadline:{ interval: 260,  size: [24, 260], dur: [0.5, 1.1], life: [2.6, 4.6], types: SPINNER_TYPES,     colors: ['#f0e9e0', '#ffffff', '#c7cdd1'], opacity: 0.92 }
   };
 
   function rand(min, max) { return min + Math.random() * (max - min); }
 
+  // Spinner markup. 'dots' = ring of 12 dots, biggest/darkest first, trailing smaller & lighter.
+  // 'spokes' = 12 rounded spokes with a fading opacity trail (iOS style).
+  function spinnerMarkup(type) {
+    var cls = type === 'dots' ? 'sp-dots' : 'sp-spokes';
+    var html = '<span class="' + cls + '">';
+    for (var i = 0; i < 12; i++) {
+      // dots: the head is biggest/darkest, trail shrinks & fades behind it;
+      // spokes: plain fading opacity trail, nothing else
+      var r = -i * 30;
+      var o = Math.max(0.12, 1 - i * 0.078);
+      var k = (1 - i * 0.06).toFixed(2);
+      html += '<i style="--r:' + r + 'deg;--o:' + o.toFixed(2) + ';--k:' + k + '"></i>';
+    }
+    return html + '</span>';
+  }
+
   function buildSpinnerEl(type, cfg) {
     var wrap = document.createElement('div');
-    wrap.className = 'fx-sp' + (cfg.glow ? ' glow' : '');
-    wrap.style.left = rand(4, 92) + '%';
-    wrap.style.top = rand(8, 86) + '%';
+    wrap.className = 'fx-sp';
+    wrap.style.left = rand(-2, 94) + '%';
+    wrap.style.top = rand(2, 92) + '%';
     wrap.style.setProperty('--s', Math.round(rand(cfg.size[0], cfg.size[1])) + 'px');
     wrap.style.setProperty('--d', rand(cfg.dur[0], cfg.dur[1]).toFixed(2) + 's');
-    wrap.style.setProperty('--fd', rand(5, 9).toFixed(2) + 's');
+    wrap.style.setProperty('--fd', rand(cfg.life[0], cfg.life[1]).toFixed(2) + 's');
     wrap.style.setProperty('--fo', cfg.opacity);
-    wrap.style.setProperty('--fxr', Math.round(rand(-160, 160)) + 'px');
-    wrap.style.setProperty('--fyr', Math.round(rand(cfg.driftY[0], cfg.driftY[1])) + 'px');
-    wrap.style.setProperty('--sp-c', cfg.color);
-    wrap.style.setProperty('--sp-track', cfg.track);
-
-    if (type === 'ring') wrap.innerHTML = '<span class="sp-ring"></span>';
-    else if (type === 'dots') wrap.innerHTML = '<span class="sp-dots">' + '<i></i>'.repeat(8) + '</span>';
-    else if (type === 'bars') wrap.innerHTML = '<span class="sp-bars">' + '<i></i>'.repeat(5) + '</span>';
-    else if (type === 'ball') wrap.innerHTML = '<span class="sp-ball"></span>';
-    else wrap.innerHTML = '<span class="sp-hour">\u23F3</span>';
-
-    var dots = wrap.querySelectorAll('.sp-dots i');
-    for (var di = 0; di < dots.length; di++) dots[di].style.setProperty('--r', di * 45 + 'deg');
-    var bars = wrap.querySelectorAll('.sp-bars i');
-    for (var bi = 0; bi < bars.length; bi++) bars[bi].style.animationDelay = bi * 0.12 + 's';
+    wrap.style.setProperty('--sp-c', cfg.colors[Math.floor(Math.random() * cfg.colors.length)]);
+    wrap.innerHTML = spinnerMarkup(type);
     return wrap;
+  }
+
+  // Deadline only: a cluttered pile of fake system windows, each with a plain spinner inside
+  var WIN_TEXTS = [
+    'Loading data...', 'Please wait...', 'Still loading...', 'Not responding',
+    'Do not close this window', 'Installing updates... 99%', 'Task postponed', 'Almost there...'
+  ];
+
+  function buildWindowEl() {
+    var w = document.createElement('div');
+    w.className = 'fx-win';
+    var width = Math.round(rand(170, 330));
+    w.style.left = rand(-3, 88) + '%';
+    w.style.top = rand(3, 86) + '%';
+    w.style.setProperty('--ww', width + 'px');
+    w.style.setProperty('--fd', rand(3, 5.5).toFixed(2) + 's');
+    w.style.setProperty('--rot', rand(-3, 3).toFixed(1) + 'deg');
+    w.style.setProperty('--s', Math.round(rand(18, 26)) + 'px');
+    w.style.setProperty('--sp-c', Math.random() < 0.5 ? '#2d3b45' : '#5c6a75');
+    var title = ['Loading', 'Please Wait', 'Submission Portal', 'Not Responding', 'System'][Math.floor(Math.random() * 5)];
+    w.innerHTML =
+      '<div class="fx-win-title"><span>' + title + '</span><b>_</b><b>\u25A1</b><b>x</b></div>' +
+      '<div class="fx-win-body">' + spinnerMarkup(Math.random() < 0.5 ? 'dots' : 'spokes') +
+      '<span class="fx-win-text">' + WIN_TEXTS[Math.floor(Math.random() * WIN_TEXTS.length)] + '</span></div>' +
+      '<div class="fx-win-bar"><i></i></div>';
+    return w;
+  }
+
+  function spawnRetroWindow() {
+    if (!spinnerLayer) return;
+    if (spinnerLayer.querySelectorAll('.fx-win').length >= 10) return;
+    var win = buildWindowEl();
+    spinnerLayer.appendChild(win);
+    setTimeout(function () { win.remove(); }, 5600);
   }
 
   function spawnSpinner(phase) {
     if (!spinnerLayer) return;
-    var cap = phase === 'deadline' ? 46 : 14;
+    var cap = phase === 'deadline' ? 60 : 12;
     if (spinnerLayer.children.length >= cap) return;
     var cfg = SPINNER_PHASES[phase];
+    if (phase === 'deadline' && Math.random() < 0.35) {
+      spawnRetroWindow();
+      return;
+    }
     var type = cfg.types[Math.floor(Math.random() * cfg.types.length)];
     var wrap = buildSpinnerEl(type, cfg);
     if (phase === 'calm') {
@@ -316,7 +365,7 @@
       wrap.style.left = '';
       wrap.style.top = '';
     } else {
-      setTimeout(function () { wrap.remove(); }, Math.round(rand(3200, 5200)));
+      setTimeout(function () { wrap.remove(); }, Math.round(cfg.life[1] * 1000) + 200);
     }
     spinnerLayer.appendChild(wrap);
   }
@@ -336,18 +385,23 @@
       if (calm) calm.remove();
     }
     spawnSpinner(phase);
-    spinnerTimer = setInterval(function () { spawnSpinner(phase); }, SPINNER_PHASES[phase].interval);
+    if (phase === 'deadline') {
+      // land in a pile straight away
+      for (var n = 0; n < 12; n++) setTimeout(function () { spawnSpinner('deadline'); }, n * 60);
+    }
+    spinnerTimer = setInterval(function () {
+      spawnSpinner(phase);
+      if (phase === 'deadline') { spawnSpinner(phase); spawnSpinner(phase); }
+    }, SPINNER_PHASES[phase].interval);
   }
 
   function spinnerBurst() {
-    for (var i = 0; i < 26; i++) {
-      (function (delay) {
-        setTimeout(function () { spawnSpinner('deadline'); }, delay);
-      })(i * 45);
-    }
+    for (var i = 0; i < 40; i++) setTimeout(function () { spawnSpinner('deadline'); }, i * 35);
   }
 
   function clearSpinners() {
+    if (spinnerTimer) clearInterval(spinnerTimer);
+    spinnerTimer = null;
     if (spinnerLayer) spinnerLayer.innerHTML = '';
   }
 
@@ -377,8 +431,9 @@
     startTicking();
     clearInterval(chaosTimer);
     chaosTimer = setInterval(function () {
-      randomPopup();
-      if (Math.random() < 0.4) randomPopup();
+      spawnRetroWindow();
+      if (Math.random() < 0.4) spawnRetroWindow();
+      if (Math.random() < 0.3) randomPopup();
     }, 700);
   }
 
@@ -410,6 +465,10 @@
   }
 
   function startChaos() {
+    // ambient toasts for the calm phase only — never overwrite the
+    // deadline window-spawner that already owns chaosTimer
+    if (document.body.classList.contains('deadline')) return;
+    clearInterval(chaosTimer);
     chaosTimer = setInterval(randomPopup, 2200);
   }
 
@@ -434,8 +493,8 @@
 
     updateLoading(100, 'All tasks completed');
 
-    var storm = setInterval(randomPopup, 120);
-    setTimeout(function () { clearInterval(storm); }, 900);
+    var storm = setInterval(spawnRetroWindow, 130);
+    setTimeout(function () { clearInterval(storm); }, 1000);
     spinnerBurst();
 
     document.body.classList.remove('fx-anxious');
@@ -446,6 +505,7 @@
       bubble.classList.add('fx-hidden');
       countdown.classList.add('fx-hidden');
       hideLoading();
+      chaosLayer.innerHTML = '';
       clearSpinners();
     }, 1600);
   }
