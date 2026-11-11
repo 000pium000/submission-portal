@@ -1,0 +1,267 @@
+#!/usr/bin/env python3
+"""Build the three Canvas-styled task pages from a shared chrome template."""
+
+GLOBAL_NAV = """
+    <nav class="global-nav" aria-label="Global navigation">
+      <a class="global-logo" href="index.html" aria-label="City University of Hong Kong home">
+        <img src="cityu-logo.jpg" alt="CityU">
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg>
+        Account
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 14l3.5-4"/><circle cx="12" cy="18" r="0.9" fill="currentColor" stroke="none"/></svg>
+        Dashboard
+      </a>
+      <a class="global-item active" href="index.html" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="6" r="2.4"/><circle cx="5" cy="17" r="2.4"/><circle cx="19" cy="17" r="2.4"/><path d="M12 8.4L6.2 15M12 8.4L17.8 15"/></svg>
+        Courses
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M4 10h16M8 4v4M16 4v4"/></svg>
+        Calendar
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M4 10.5l4 3.5h8l4-3.5"/></svg>
+        Inbox
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12a7.5 7.5 0 1 0 2-5"/><path d="M4.5 4.5v3.4h3.4"/><path d="M12 7.5V12l3 1.8"/></svg>
+        History
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.4"/><path d="M9.4 9.4a2.6 2.6 0 1 1 3.6 2.4c-.7.3-1 .9-1 1.8"/><circle cx="12" cy="17" r="0.55" fill="currentColor" stroke="none"/></svg>
+        Help
+      </a>
+    </nav>
+"""
+
+EYE_OFF = '<svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="hidden from students"><path d="M4 12s3.5-6 8-6 8 6 8 6-3.5 6-8 6-8-6-8-6z"/><path d="M4.5 4.5l15 15"/></svg>'
+
+
+def course_nav(active):
+    items = [
+        ("Home", False, "index.html"),
+        ("Announcements", True, "#"),
+        ("Assignments", False, "login.html"),
+        ("Discussions", False, "#"),
+        ("Grades", False, "#"),
+        ("People", False, "#"),
+        ("Pages", False, "#"),
+        ("Files", False, "#"),
+        ("Syllabus", False, "#"),
+        ("Outcomes", True, "#"),
+        ("Rubrics", False, "#"),
+        ("Quizzes", False, "#"),
+        ("Modules", True, "#"),
+        ("Attendance", False, "#"),
+        ("Chat", False, "#"),
+        ("Zoom Meetings", False, "#"),
+        ("UO Course Surveys", False, "#"),
+        ("Library Research Help", False, "#"),
+        ("Panopto Video", False, "#"),
+        ("Settings", False, "#"),
+    ]
+    out = ['    <nav class="course-nav" aria-label="Course navigation">']
+    out.append('      <p class="course-nav-title">Important Tasks Portal</p>')
+    for name, hidden, href in items:
+        if name == active:
+            out.append(
+                f'      <a class="course-item active" href="{href}" aria-current="page">{name}</a>')
+        elif hidden:
+            out.append(f'      <span class="course-item hidden-item">{EYE_OFF}{name}</span>')
+        else:
+            out.append(f'      <a class="course-item" href="{href}">{name}</a>')
+    out.append('    </nav>')
+    return "\n".join(out)
+
+
+TRACKER = """      <nav id="tracker" class="tracker" aria-label="Task progress">
+        <a class="pill{cur_login}" data-task="login" href="login.html">
+          <span class="pill-num">01</span>
+          <span class="pill-name">Select file</span>
+          <span class="pill-status">Not started</span>
+        </a>
+        <a class="pill{cur_form}" data-task="form" href="form.html">
+          <span class="pill-num">02</span>
+          <span class="pill-name">Confirm</span>
+          <span class="pill-status">Not started</span>
+        </a>
+        <a class="pill{cur_confirm}" data-task="confirm" href="confirm.html">
+          <span class="pill-num">03</span>
+          <span class="pill-name">Submit</span>
+          <span class="pill-status">Not started</span>
+        </a>
+      </nav>
+      <p class="avoided">Tasks avoided: <strong id="avoided">0</strong></p>"""
+
+
+def page(filename, title, head_title, crumb, banner, sections, active_task):
+    current = {"login": "", "form": "", "confirm": ""}
+    current[active_task] = " current"
+    tracker = TRACKER.format(
+        cur_login=current["login"], cur_form=current["form"], cur_confirm=current["confirm"])
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{head_title} — Canvas Course Template 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="{active_task}">
+
+  <div id="chaos-layer" aria-hidden="true"></div>
+
+  <div class="canvas-layout">
+{GLOBAL_NAV}
+{course_nav("Assignments")}
+
+    <div class="canvas-main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" aria-label="Menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Canvas Course Template 2</a>
+            <span class="crumb-sep">&rsaquo;</span>
+            <a href="login.html">Assignments</a>
+            <span class="crumb-sep">&rsaquo;</span>
+            <span class="crumb-current">{crumb}</span>
+          </nav>
+        </div>
+        <button class="view-as">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="14" r="3.4"/><circle cx="17" cy="14" r="3.4"/><path d="M10.4 13.6c.9-.7 2.3-.7 3.2 0M3.6 12.8l1-4.3M20.4 12.8l-1-4.3"/></svg>
+          View as Student
+        </button>
+      </header>
+
+      <div class="content-row">
+        <main id="site" aria-label="Assignment">
+          <div class="assignment-header">
+            <h1 class="assignment-title">{title}</h1>
+            <div class="assignment-actions">
+              <button class="action-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M6.6 6.6l10.8 10.8"/></svg>
+                Publish
+              </button>
+              <button class="action-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.7-3.3 3.3-5 6.5-5s5.8 1.7 6.5 5"/></svg>
+                Assign To
+              </button>
+              <button class="action-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16.5 4.5a2.12 2.12 0 0 1 3 3L8 19l-4 1z"/></svg>
+                Edit
+              </button>
+              <button class="kebab" aria-label="More options">&vellip;</button>
+            </div>
+          </div>
+
+          <div class="assignment-card">
+            <div class="card-banner">{banner}</div>
+{sections}
+            <div class="resize-handle" aria-hidden="true"></div>
+          </div>
+
+          <div class="assignment-meta">
+            <span><span class="meta-label">Points</span><span class="meta-value">0</span></span>
+            <span><span class="meta-label">Submitting</span><span class="meta-value">Nothing</span></span>
+          </div>
+
+          <section class="loading-area">
+            <div class="loading-bar" role="progressbar" aria-label="Page loading progress">
+              <div id="loading-fill"></div>
+            </div>
+            <p id="loading-text">Loading&hellip; Please Wait</p>
+          </section>
+        </main>
+
+        <aside class="right-sidebar">
+          <h2 class="right-title">Related Items</h2>
+{tracker}
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <aside id="chat-bubble" class="hidden" aria-live="polite">
+    <p id="chat-text">&hellip;</p>
+  </aside>
+
+  <div id="countdown" class="hidden">
+    <span id="countdown-label">Deadline</span>
+    <span id="countdown-time">40</span>
+  </div>
+
+  <div id="final-screen" class="hidden">
+    <p class="final-kicker">All tasks completed at 00:00</p>
+    <h1 class="final-title">Done.</h1>
+    <p class="final-question">But why did I wait until now?</p>
+    <p class="final-reflection">The work was always possible.<br>The waiting made it feel impossible.</p>
+    <button id="restart-btn">Wait again</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+"""
+    with open(filename, "w") as f:
+        f.write(html)
+    print("wrote", filename)
+
+
+login_sections = """            <form id="task-form" class="task" data-task="login" novalidate>
+              <section class="card-section">
+                <h3>Submission Details</h3>
+                <div class="field">
+                  <label for="file">Choose a file</label>
+                  <input id="file" type="file">
+                </div>
+                <button type="submit" class="task-btn">Select file</button>
+                <p class="status" id="task-status">Not started</p>
+              </section>
+            </form>"""
+
+form_sections = """            <form id="task-form" class="task" data-task="form" novalidate>
+              <section class="card-section">
+                <h3>Submission Details</h3>
+                <dl class="summary">
+                  <div><dt>File selected</dt><dd id="sum-login">Not yet</dd></div>
+                  <div><dt>Details reviewed</dt><dd id="sum-form">Not yet</dd></div>
+                  <div><dt>Ready to submit</dt><dd id="sum-confirm">Not yet</dd></div>
+                </dl>
+                <button type="submit" class="task-btn">Confirm</button>
+                <p class="status" id="task-status">Not started</p>
+              </section>
+            </form>"""
+
+confirm_sections = """            <form id="task-form" class="task" data-task="confirm" novalidate>
+              <section class="card-section">
+                <h3>Submission Details</h3>
+                <button type="submit" class="task-btn">Submit assignment</button>
+                <p class="status" id="task-status">Not started</p>
+              </section>
+            </form>"""
+
+page("login.html",
+     "T: Week 1 - Assignment: Select A File",
+     "Select file", "T: Week 1 - Assignment: Select A File",
+     "Select the file you would like to submit",
+     login_sections, "login")
+
+page("form.html",
+     "T: Week 2 - Assignment: Confirm",
+     "Confirm", "T: Week 2 - Assignment: Confirm",
+     "Confirm your submission",
+     form_sections, "form")
+
+page("confirm.html",
+     "T: Week 3 - Assignment: Submit",
+     "Submit", "T: Week 3 - Assignment: Submit",
+     "Submit your assignment",
+     confirm_sections, "confirm")
