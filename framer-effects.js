@@ -365,30 +365,44 @@
   }
 
   // ---------- 倒數主流程 ----------
+  function applyAnxiousStage() {
+    document.body.classList.add('fx-anxious');
+    startSpinnerPhase('anxious');
+  }
+
+  function applyDeadlineStage() {
+    document.body.classList.add('fx-deadline');
+    startSpinnerPhase('deadline');
+    startTicking();
+    clearInterval(chaosTimer);
+    chaosTimer = setInterval(function () {
+      randomPopup();
+      if (Math.random() < 0.4) randomPopup();
+    }, 700);
+  }
+
   function startCountdown() {
     showCountdown();
+
+    // landed mid-phase (e.g. navigated between pages during the deadline):
+    // apply the current stage immediately instead of waiting for a tick
+    if (secondsLeft <= CONFIG.darkAt) applyDeadlineStage();
+    else if (secondsLeft <= CONFIG.anxiousAt) applyAnxiousStage();
+
     countdownTimer = setInterval(function () {
       secondsLeft--;
       countdownTime.textContent = Math.max(secondsLeft, 0);
       rewriteLinks();
 
       if (secondsLeft === CONFIG.anxiousAt) {
-        document.body.classList.add('fx-anxious');
         say('The deadline is close.');
         playTone(440, 0.15, 0.05);
-        startSpinnerPhase('anxious');
+        applyAnxiousStage();
       }
       if (secondsLeft === 12) say('Why did I leave this until now?');
       if (secondsLeft === CONFIG.darkAt) {
-        document.body.classList.add('fx-deadline');
         say('Everything is happening at once.');
-        startTicking();
-        startSpinnerPhase('deadline');
-        clearInterval(chaosTimer);
-        chaosTimer = setInterval(function () {
-          randomPopup();
-          if (Math.random() < 0.4) randomPopup();
-        }, 700);
+        applyDeadlineStage();
       }
       if (secondsLeft <= 0) finishAtDeadline();
     }, 1000);

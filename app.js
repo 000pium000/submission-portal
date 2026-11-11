@@ -295,11 +295,32 @@
   }
 
   // ---------- countdown ----------
+  function applyAnxiousStage() {
+    document.body.classList.add('anxious');
+    startSpinnerPhase('anxious');
+  }
+
+  function applyDeadlineStage() {
+    document.body.classList.add('deadline');
+    startSpinnerPhase('deadline');
+    startTicking();
+    clearInterval(chaosTimer);
+    chaosTimer = setInterval(() => {
+      randomPopup();
+      if (Math.random() < 0.4) randomPopup();
+    }, 700);
+  }
+
   function startCountdown() {
     if (els.countdown) {
       els.countdown.classList.remove('hidden');
       els.countdownTime.textContent = Math.max(secondsLeft, 0);
     }
+
+    // landed mid-phase (e.g. navigated between pages during the deadline):
+    // apply the current stage immediately instead of waiting for a tick
+    if (secondsLeft <= DARK_AT) applyDeadlineStage();
+    else if (secondsLeft <= ANXIOUS_AT) applyAnxiousStage();
 
     countdownTimer = setInterval(() => {
       secondsLeft--;
@@ -307,10 +328,9 @@
       rewriteLinks();
 
       if (secondsLeft === ANXIOUS_AT) {
-        document.body.classList.add('anxious');
         say('The deadline is close.');
         playTone(440, 0.15, 0.05);
-        startSpinnerPhase('anxious');
+        applyAnxiousStage();
       }
 
       if (secondsLeft === 12) {
@@ -318,15 +338,8 @@
       }
 
       if (secondsLeft === DARK_AT) {
-        document.body.classList.add('deadline');
         say('Everything is happening at once.');
-        startTicking();
-        startSpinnerPhase('deadline');
-        clearInterval(chaosTimer);
-        chaosTimer = setInterval(() => {
-          randomPopup();
-          if (Math.random() < 0.4) randomPopup();
-        }, 700);
+        applyDeadlineStage();
       }
 
       if (secondsLeft <= 0) {
