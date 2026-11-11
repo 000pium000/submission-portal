@@ -991,6 +991,125 @@ body.deadline .card-banner {
   transform: translateY(-1px);
 }
 
+/* ============================================================
+   Loading icons: one quiet spinner (calm) -> drifting few
+   (anxious) -> glowing storm (deadline)
+   ============================================================ */
+
+#spinner-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 45;
+  overflow: hidden;
+}
+
+.fx-sp {
+  position: absolute;
+  animation: fx-float var(--fd, 8s) linear forwards;
+}
+
+@keyframes fx-float {
+  0%   { opacity: 0; transform: translate(0, 0); }
+  15%  { opacity: var(--fo, 1); }
+  85%  { opacity: var(--fo, 1); }
+  100% { opacity: 0; transform: translate(var(--fxr, 0px), var(--fyr, -90px)); }
+}
+
+@keyframes fx-spin { to { transform: rotate(360deg); } }
+
+@keyframes fx-breathe {
+  0%, 100% { opacity: 0.4; transform: scale(0.94); }
+  50%      { opacity: 0.8; transform: scale(1); }
+}
+
+@keyframes fx-wave {
+  0%, 100% { height: 30%; }
+  50%      { height: 100%; }
+}
+
+/* ---- the quiet one: a small ring, bottom-left, breathing ---- */
+.fx-sp.calm {
+  position: fixed;
+  left: 28px;
+  bottom: 132px;
+  animation: fx-breathe 3.2s ease-in-out infinite;
+}
+
+/* ---- spinner types ---- */
+.fx-sp .sp-ring {
+  display: block;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  border: calc(var(--s) * 0.11) solid var(--sp-track, rgba(45, 59, 69, 0.15));
+  border-top-color: var(--sp-c, #831135);
+  animation: fx-spin var(--d, 1.5s) linear infinite;
+}
+
+.fx-sp .sp-dots {
+  position: relative;
+  display: block;
+  width: var(--s);
+  height: var(--s);
+  animation: fx-spin var(--d, 1.5s) linear infinite;
+}
+
+.fx-sp .sp-dots i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--s) * 0.15);
+  height: calc(var(--s) * 0.15);
+  margin: calc(var(--s) * -0.075) 0 0 calc(var(--s) * -0.075);
+  border-radius: 50%;
+  background: var(--sp-c, #831135);
+  transform: rotate(var(--r, 0deg)) translateY(calc(var(--s) * -0.4));
+}
+
+.fx-sp .sp-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: calc(var(--s) * 0.14);
+  height: var(--s);
+}
+
+.fx-sp .sp-bars i {
+  width: calc(var(--s) * 0.13);
+  height: 100%;
+  border-radius: 2px;
+  background: var(--sp-c, #831135);
+  animation: fx-wave var(--d, 1.2s) ease-in-out infinite;
+}
+
+/* ---- beach ball (macOS-style) ---- */
+.fx-sp .sp-ball {
+  display: block;
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: conic-gradient(
+    #e05252 0 45deg, #f0a742 45deg 90deg, #4cc26b 90deg 135deg, #4c9fe0 135deg 180deg,
+    #b48ce0 180deg 225deg, #e0c84c 225deg 270deg, #e05a9d 270deg 315deg, #6bd6c8 315deg 360deg
+  );
+  animation: fx-spin var(--d, 0.6s) linear infinite;
+}
+
+.fx-sp .sp-hour {
+  display: block;
+  font-size: var(--s);
+  line-height: 1;
+  animation: fx-spin var(--d, 1.5s) linear infinite;
+}
+
+/* ---- deadline glow ---- */
+.fx-sp.glow .sp-ring,
+.fx-sp.glow .sp-ball,
+.fx-sp.glow .sp-bars i,
+.fx-sp.glow .sp-dots i {
+  box-shadow: 0 0 calc(var(--s) * 0.3) rgba(224, 82, 82, 0.5);
+}
+
 /* ============ Reduced motion ============ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

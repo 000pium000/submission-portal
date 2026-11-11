@@ -206,6 +206,94 @@
     if (els.sumConfirm) els.sumConfirm.textContent = 'Yes, eventually';
   }
 
+  // ---------- loading icons: calm -> chaotic ----------
+  // A single quiet spinner while calm; a drifting few when anxious;
+  // a storm of glowing, spinning icons when the deadline hits.
+  let spinnerLayer = null;
+  let spinnerTimer = null;
+
+  const SPINNER_TYPES = ['ring', 'dots', 'bars', 'ball', 'hour'];
+
+  const SPINNER_PHASES = {
+    calm:    { interval: 0,    size: [18, 26], dur: [2.8, 3.8], types: ['ring'],                 color: '#831135', track: 'rgba(131,17,53,.14)', opacity: 0.55, glow: false, driftY: [-30, -50] },
+    anxious: { interval: 1500, size: [20, 42], dur: [1.2, 2.2], types: ['ring', 'dots', 'hour'], color: '#a13d3d', track: 'rgba(161,61,61,.16)', opacity: 0.8,  glow: false, driftY: [-140, -60] },
+    deadline:{ interval: 300,  size: [22, 96], dur: [0.25, 0.7], types: SPINNER_TYPES,          color: '#e05252', track: 'rgba(224,82,82,.2)',  opacity: 1,    glow: true,  driftY: [-240, 240] }
+  };
+
+  function rand(min, max) { return min + Math.random() * (max - min); }
+
+  function buildSpinnerEl(type, cfg) {
+    const wrap = document.createElement('div');
+    wrap.className = 'fx-sp' + (cfg.glow ? ' glow' : '');
+    wrap.style.left = rand(4, 92) + '%';
+    wrap.style.top = rand(8, 86) + '%';
+    wrap.style.setProperty('--s', Math.round(rand(cfg.size[0], cfg.size[1])) + 'px');
+    wrap.style.setProperty('--d', rand(cfg.dur[0], cfg.dur[1]).toFixed(2) + 's');
+    wrap.style.setProperty('--fd', rand(5, 9).toFixed(2) + 's');
+    wrap.style.setProperty('--fo', cfg.opacity);
+    wrap.style.setProperty('--fxr', Math.round(rand(-160, 160)) + 'px');
+    wrap.style.setProperty('--fyr', Math.round(rand(cfg.driftY[0], cfg.driftY[1])) + 'px');
+    wrap.style.setProperty('--sp-c', cfg.color);
+    wrap.style.setProperty('--sp-track', cfg.track);
+
+    if (type === 'ring') wrap.innerHTML = '<span class="sp-ring"></span>';
+    else if (type === 'dots') wrap.innerHTML = '<span class="sp-dots">' + '<i></i>'.repeat(8) + '</span>';
+    else if (type === 'bars') wrap.innerHTML = '<span class="sp-bars">' + '<i></i>'.repeat(5) + '</span>';
+    else if (type === 'ball') wrap.innerHTML = '<span class="sp-ball"></span>';
+    else wrap.innerHTML = '<span class="sp-hour">\u23F3</span>';
+
+    if (type === 'dots') {
+      wrap.querySelectorAll('.sp-dots i').forEach((d, i) => d.style.setProperty('--r', i * 45 + 'deg'));
+    }
+    if (type === 'bars') {
+      wrap.querySelectorAll('.sp-bars i').forEach((b, i) => b.style.animationDelay = i * 0.12 + 's');
+    }
+    return wrap;
+  }
+
+  function spawnSpinner(phase) {
+    if (!spinnerLayer) return;
+    const cap = phase === 'deadline' ? 46 : 14;
+    if (spinnerLayer.children.length >= cap) return;
+    const cfg = SPINNER_PHASES[phase];
+    const type = cfg.types[Math.floor(Math.random() * cfg.types.length)];
+    const wrap = buildSpinnerEl(type, cfg);
+    if (phase === 'calm') {
+      wrap.className = 'fx-sp calm';
+      wrap.style.left = '';
+      wrap.style.top = '';
+    } else {
+      setTimeout(() => wrap.remove(), Math.round(rand(3200, 5200)));
+    }
+    spinnerLayer.appendChild(wrap);
+  }
+
+  function startSpinnerPhase(phase) {
+    if (!spinnerLayer) return;
+    if (spinnerTimer) clearInterval(spinnerTimer);
+    spinnerTimer = null;
+
+    if (phase === 'calm') {
+      spinnerLayer.innerHTML = '';
+      spawnSpinner('calm');
+      return;
+    }
+    if (phase === 'anxious') {
+      const calm = spinnerLayer.querySelector('.calm');
+      if (calm) calm.remove();
+    }
+    spawnSpinner(phase);
+    spinnerTimer = setInterval(() => spawnSpinner(phase), SPINNER_PHASES[phase].interval);
+  }
+
+  function spinnerBurst() {
+    for (let i = 0; i < 26; i++) setTimeout(() => spawnSpinner('deadline'), i * 45);
+  }
+
+  function clearSpinners() {
+    if (spinnerLayer) spinnerLayer.innerHTML = '';
+  }
+
   // ---------- countdown ----------
   function startCountdown() {
     if (els.countdown) {
@@ -222,6 +310,7 @@
         document.body.classList.add('anxious');
         say('The deadline is close.');
         playTone(440, 0.15, 0.05);
+        startSpinnerPhase('anxious');
       }
 
       if (secondsLeft === 12) {
@@ -232,6 +321,7 @@
         document.body.classList.add('deadline');
         say('Everything is happening at once.');
         startTicking();
+        startSpinnerPhase('deadline');
         clearInterval(chaosTimer);
         chaosTimer = setInterval(() => {
           randomPopup();
@@ -275,6 +365,7 @@
     // storm of pop-ups resolving into nothing
     const storm = setInterval(randomPopup, 120);
     setTimeout(() => clearInterval(storm), 900);
+    spinnerBurst();
 
     document.body.classList.remove('anxious');
     document.body.classList.remove('deadline');
@@ -284,6 +375,7 @@
         els.finalScreen.classList.remove('hidden');
         if (els.chatBubble) els.chatBubble.classList.add('hidden');
         if (els.countdown) els.countdown.classList.add('hidden');
+        clearSpinners();
       }, 1600);
     } else {
       // safety: fall back to the start page if this script ever runs elsewhere
@@ -359,6 +451,12 @@
 
   // begin the artwork on the task pages
   if (!isStart) {
+    spinnerLayer = document.createElement('div');
+    spinnerLayer.id = 'spinner-layer';
+    spinnerLayer.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(spinnerLayer);
+    startSpinnerPhase('calm');
+
     say('Hello. I will help you finish everything.');
     rewriteLinks();
     startCountdown();

@@ -96,7 +96,24 @@
     '#fx-restart{padding:11px 30px;background:#f0e9e0;color:#17130f;border:none;border-radius:3px;font:700 14px/1 Lato,Arial,sans-serif;cursor:pointer;transition:opacity .18s,transform .18s}',
     '#fx-restart:hover{opacity:.85;transform:translateY(-1px)}',
 
-    '@media (prefers-reduced-motion: reduce){body.fx-anxious,body.fx-deadline{animation:none!important}}'
+    /* Loading icons: calm -> chaotic */
+    '#fx-spinner-layer{position:fixed;inset:0;pointer-events:none;z-index:45;overflow:hidden}',
+    '.fx-sp{position:absolute;animation:fx-float var(--fd,8s) linear forwards}',
+    '@keyframes fx-float{0%{opacity:0;transform:translate(0,0)}15%{opacity:var(--fo,1)}85%{opacity:var(--fo,1)}100%{opacity:0;transform:translate(var(--fxr,0px),var(--fyr,-90px))}}',
+    '@keyframes fx-spin{to{transform:rotate(360deg)}}',
+    '@keyframes fx-breathe{0%,100%{opacity:.4;transform:scale(.94)}50%{opacity:.8;transform:scale(1)}}',
+    '@keyframes fx-wave{0%,100%{height:30%}50%{height:100%}}',
+    '.fx-sp.calm{position:fixed;left:28px;bottom:132px;animation:fx-breathe 3.2s ease-in-out infinite}',
+    '.fx-sp .sp-ring{display:block;width:var(--s);height:var(--s);border-radius:50%;border:calc(var(--s)*0.11) solid var(--sp-track,rgba(45,59,69,.15));border-top-color:var(--sp-c,#831135);animation:fx-spin var(--d,1.5s) linear infinite}',
+    '.fx-sp .sp-dots{position:relative;display:block;width:var(--s);height:var(--s);animation:fx-spin var(--d,1.5s) linear infinite}',
+    '.fx-sp .sp-dots i{position:absolute;top:50%;left:50%;width:calc(var(--s)*0.15);height:calc(var(--s)*0.15);margin:calc(var(--s)*-0.075) 0 0 calc(var(--s)*-0.075);border-radius:50%;background:var(--sp-c,#831135);transform:rotate(var(--r,0deg)) translateY(calc(var(--s)*-0.4))}',
+    '.fx-sp .sp-bars{display:flex;align-items:flex-end;gap:calc(var(--s)*0.14);height:var(--s)}',
+    '.fx-sp .sp-bars i{width:calc(var(--s)*0.13);height:100%;border-radius:2px;background:var(--sp-c,#831135);animation:fx-wave var(--d,1.2s) ease-in-out infinite}',
+    '.fx-sp .sp-ball{display:block;width:var(--s);height:var(--s);border-radius:50%;background:conic-gradient(#e05252 0 45deg,#f0a742 45deg 90deg,#4cc26b 90deg 135deg,#4c9fe0 135deg 180deg,#b48ce0 180deg 225deg,#e0c84c 225deg 270deg,#e05a9d 270deg 315deg,#6bd6c8 315deg 360deg);animation:fx-spin var(--d,.6s) linear infinite}',
+    '.fx-sp .sp-hour{display:block;font-size:var(--s);line-height:1;animation:fx-spin var(--d,1.5s) linear infinite}',
+    '.fx-sp.glow .sp-ring,.fx-sp.glow .sp-ball,.fx-sp.glow .sp-bars i,.fx-sp.glow .sp-dots i{box-shadow:0 0 calc(var(--s)*0.3) rgba(224,82,82,.5)}',
+
+    '@media (prefers-reduced-motion: reduce){body.fx-anxious,body.fx-deadline{animation:none!important}.fx-sp{animation:none!important}}'
   ].join('\n');
   var styleEl = document.createElement('style');
   styleEl.textContent = css;
@@ -115,6 +132,7 @@
   var tintAnxious = el('<div id="fx-tint-anxious" aria-hidden="true"></div>');
   var tintDeadline = el('<div id="fx-tint-deadline" aria-hidden="true"></div>');
   var chaosLayer = el('<div id="fx-chaos" aria-hidden="true"></div>');
+  var spinnerLayer = el('<div id="fx-spinner-layer" aria-hidden="true"></div>');
   var countdown = el('<div id="fx-countdown"><span id="fx-countdown-label">Deadline</span><span id="fx-countdown-time">40</span></div>', true);
   var bubble = el('<aside id="fx-bubble" aria-live="polite"><p id="fx-bubble-text">&hellip;</p></aside>', true);
   var loading = el('<div id="fx-loading"><div id="fx-loading-bar"><div id="fx-loading-fill"></div></div><p id="fx-loading-text">Loading&hellip; Please Wait</p></div>', true);
@@ -246,6 +264,92 @@
     setTimeout(function () { popup.remove(); }, 3200);
   }
 
+  // ---------- Loading icons: calm -> chaotic ----------
+  var spinnerTimer = null;
+  var SPINNER_TYPES = ['ring', 'dots', 'bars', 'ball', 'hour'];
+
+  var SPINNER_PHASES = {
+    calm:    { interval: 0,    size: [18, 26], dur: [2.8, 3.8], types: ['ring'],                 color: '#831135', track: 'rgba(131,17,53,.14)', opacity: 0.55, glow: false, driftY: [-30, -50] },
+    anxious: { interval: 1500, size: [20, 42], dur: [1.2, 2.2], types: ['ring', 'dots', 'hour'], color: '#a13d3d', track: 'rgba(161,61,61,.16)', opacity: 0.8,  glow: false, driftY: [-140, -60] },
+    deadline:{ interval: 300,  size: [22, 96], dur: [0.25, 0.7], types: SPINNER_TYPES,          color: '#e05252', track: 'rgba(224,82,82,.2)',  opacity: 1,    glow: true,  driftY: [-240, 240] }
+  };
+
+  function rand(min, max) { return min + Math.random() * (max - min); }
+
+  function buildSpinnerEl(type, cfg) {
+    var wrap = document.createElement('div');
+    wrap.className = 'fx-sp' + (cfg.glow ? ' glow' : '');
+    wrap.style.left = rand(4, 92) + '%';
+    wrap.style.top = rand(8, 86) + '%';
+    wrap.style.setProperty('--s', Math.round(rand(cfg.size[0], cfg.size[1])) + 'px');
+    wrap.style.setProperty('--d', rand(cfg.dur[0], cfg.dur[1]).toFixed(2) + 's');
+    wrap.style.setProperty('--fd', rand(5, 9).toFixed(2) + 's');
+    wrap.style.setProperty('--fo', cfg.opacity);
+    wrap.style.setProperty('--fxr', Math.round(rand(-160, 160)) + 'px');
+    wrap.style.setProperty('--fyr', Math.round(rand(cfg.driftY[0], cfg.driftY[1])) + 'px');
+    wrap.style.setProperty('--sp-c', cfg.color);
+    wrap.style.setProperty('--sp-track', cfg.track);
+
+    if (type === 'ring') wrap.innerHTML = '<span class="sp-ring"></span>';
+    else if (type === 'dots') wrap.innerHTML = '<span class="sp-dots">' + '<i></i>'.repeat(8) + '</span>';
+    else if (type === 'bars') wrap.innerHTML = '<span class="sp-bars">' + '<i></i>'.repeat(5) + '</span>';
+    else if (type === 'ball') wrap.innerHTML = '<span class="sp-ball"></span>';
+    else wrap.innerHTML = '<span class="sp-hour">\u23F3</span>';
+
+    var dots = wrap.querySelectorAll('.sp-dots i');
+    for (var di = 0; di < dots.length; di++) dots[di].style.setProperty('--r', di * 45 + 'deg');
+    var bars = wrap.querySelectorAll('.sp-bars i');
+    for (var bi = 0; bi < bars.length; bi++) bars[bi].style.animationDelay = bi * 0.12 + 's';
+    return wrap;
+  }
+
+  function spawnSpinner(phase) {
+    if (!spinnerLayer) return;
+    var cap = phase === 'deadline' ? 46 : 14;
+    if (spinnerLayer.children.length >= cap) return;
+    var cfg = SPINNER_PHASES[phase];
+    var type = cfg.types[Math.floor(Math.random() * cfg.types.length)];
+    var wrap = buildSpinnerEl(type, cfg);
+    if (phase === 'calm') {
+      wrap.className = 'fx-sp calm';
+      wrap.style.left = '';
+      wrap.style.top = '';
+    } else {
+      setTimeout(function () { wrap.remove(); }, Math.round(rand(3200, 5200)));
+    }
+    spinnerLayer.appendChild(wrap);
+  }
+
+  function startSpinnerPhase(phase) {
+    if (!spinnerLayer) return;
+    if (spinnerTimer) clearInterval(spinnerTimer);
+    spinnerTimer = null;
+
+    if (phase === 'calm') {
+      spinnerLayer.innerHTML = '';
+      spawnSpinner('calm');
+      return;
+    }
+    if (phase === 'anxious') {
+      var calm = spinnerLayer.querySelector('.calm');
+      if (calm) calm.remove();
+    }
+    spawnSpinner(phase);
+    spinnerTimer = setInterval(function () { spawnSpinner(phase); }, SPINNER_PHASES[phase].interval);
+  }
+
+  function spinnerBurst() {
+    for (var i = 0; i < 26; i++) {
+      (function (delay) {
+        setTimeout(function () { spawnSpinner('deadline'); }, delay);
+      })(i * 45);
+    }
+  }
+
+  function clearSpinners() {
+    if (spinnerLayer) spinnerLayer.innerHTML = '';
+  }
+
   // ---------- 跨頁連結改寫（把倒數與「逃避次數」帶到下一頁） ----------
   function rewriteLinks() {
     var q = '?t=' + Math.max(secondsLeft, 0) + '&a=' + avoided;
@@ -272,12 +376,14 @@
         document.body.classList.add('fx-anxious');
         say('The deadline is close.');
         playTone(440, 0.15, 0.05);
+        startSpinnerPhase('anxious');
       }
       if (secondsLeft === 12) say('Why did I leave this until now?');
       if (secondsLeft === CONFIG.darkAt) {
         document.body.classList.add('fx-deadline');
         say('Everything is happening at once.');
         startTicking();
+        startSpinnerPhase('deadline');
         clearInterval(chaosTimer);
         chaosTimer = setInterval(function () {
           randomPopup();
@@ -315,6 +421,7 @@
 
     var storm = setInterval(randomPopup, 120);
     setTimeout(function () { clearInterval(storm); }, 900);
+    spinnerBurst();
 
     document.body.classList.remove('fx-anxious');
     document.body.classList.remove('fx-deadline');
@@ -324,6 +431,7 @@
       bubble.classList.add('fx-hidden');
       countdown.classList.add('fx-hidden');
       hideLoading();
+      clearSpinners();
     }, 1600);
   }
 
@@ -380,4 +488,5 @@
   startCountdown();
   startChaos();
   scheduleIdleThoughts();
+  startSpinnerPhase('calm');
 })();
