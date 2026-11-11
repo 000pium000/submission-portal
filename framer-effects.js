@@ -87,12 +87,13 @@
     'body.fx-deadline #fx-loading-fill{background:#e05252}',
     'body.fx-deadline #fx-loading-text{color:#8f8474}',
 
-    /* 結局畫面 */
-    '#fx-final{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;background:#17130f;color:#f0e9e0;z-index:100;animation:fx-bubble-in .5s ease}',
-    '#fx-final .fx-kicker{font:400 11px/1.6 Lato,Arial,sans-serif;text-transform:uppercase;letter-spacing:.18em;color:#8f8474;margin-bottom:16px}',
-    '#fx-final h1{font:900 clamp(3rem,8vw,6rem)/1 Lato,"Helvetica Neue",Arial,sans-serif;margin-bottom:16px}',
-    '#fx-final .fx-question{font:italic 400 21px/1.5 Lato,Arial,sans-serif;color:#d9cdbd;margin-bottom:36px}',
-    '#fx-final .fx-reflection{font:400 14px/1.8 Lato,Arial,sans-serif;color:#8f8474;margin-bottom:36px}',
+    /* 結局畫面：浮動卡片，頁面在背後保持可見 */
+    '#fx-final{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 48px));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:42px 36px;background:#17130f;color:#f0e9e0;border-radius:6px;box-shadow:0 24px 80px rgba(0,0,0,.45);z-index:100;animation:fx-final-in .5s ease}',
+    '@keyframes fx-final-in{from{opacity:0;transform:translate(-50%,-50%) scale(.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}',
+    '#fx-final .fx-kicker{font:400 11px/1.6 Lato,Arial,sans-serif;text-transform:uppercase;letter-spacing:.18em;color:#8f8474;margin-bottom:14px}',
+    '#fx-final h1{font:900 clamp(2.6rem,6vw,4rem)/1 Lato,"Helvetica Neue",Arial,sans-serif;margin-bottom:14px}',
+    '#fx-final .fx-question{font:italic 400 18px/1.5 Lato,Arial,sans-serif;color:#d9cdbd;margin-bottom:26px}',
+    '#fx-final .fx-reflection{font:400 14px/1.8 Lato,Arial,sans-serif;color:#8f8474;margin-bottom:32px}',
     '#fx-restart{padding:11px 30px;background:#f0e9e0;color:#17130f;border:none;border-radius:3px;font:700 14px/1 Lato,Arial,sans-serif;cursor:pointer;transition:opacity .18s,transform .18s}',
     '#fx-restart:hover{opacity:.85;transform:translateY(-1px)}',
 

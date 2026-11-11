@@ -932,19 +932,31 @@ body.deadline .card-banner {
 }
 
 /* ============ Final screen ============ */
+/* the "Done." card floats over the page — the whole interface
+   stays visible underneath instead of being covered */
 #final-screen {
   position: fixed;
-  inset: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100vw - 48px));
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 32px;
+  padding: 42px 36px;
   background: #17130f;
   color: #f0e9e0;
+  border-radius: 6px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
   z-index: 100;
-  animation: bubble-in 0.5s ease;
+  animation: final-in 0.5s ease;
+}
+
+@keyframes final-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.92); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
 
 .final-kicker {
@@ -956,17 +968,17 @@ body.deadline .card-banner {
 }
 
 .final-title {
-  font-size: clamp(3rem, 8vw, 6rem);
+  font-size: clamp(2.6rem, 6vw, 4rem);
   font-weight: 900;
   line-height: 1;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .final-question {
-  font-size: 21px;
+  font-size: 18px;
   font-style: italic;
   color: #d9cdbd;
-  margin-bottom: 36px;
+  margin-bottom: 26px;
 }
 
 .final-reflection {
