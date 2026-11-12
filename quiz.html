@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz — Course</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="quiz">
+
+  <div id="chaos-layer" aria-hidden="true"></div>
+
+  <div class="canvas-layout">
+
+    <nav class="global-nav" aria-label="Global navigation">
+      <a class="global-logo" href="index.html" aria-label="City University of Hong Kong home">
+        <img src="cityu-logo.jpg" alt="CityU">
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg>
+        Account
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 14l3.5-4"/><circle cx="12" cy="18" r="0.9" fill="currentColor" stroke="none"/></svg>
+        Dashboard
+      </a>
+      <a class="global-item active" href="index.html" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="6" r="2.4"/><circle cx="5" cy="17" r="2.4"/><circle cx="19" cy="17" r="2.4"/><path d="M12 8.4L6.2 15M12 8.4L17.8 15"/></svg>
+        Courses
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M4 10h16M8 4v4M16 4v4"/></svg>
+        Calendar
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M4 10.5l4 3.5h8l4-3.5"/></svg>
+        Inbox
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12a7.5 7.5 0 1 0 2-5"/><path d="M4.5 4.5v3.4h3.4"/><path d="M12 7.5V12l3 1.8"/></svg>
+        History
+      </a>
+      <a class="global-item" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8.4"/><path d="M9.4 9.4a2.6 2.6 0 1 1 3.6 2.4c-.7.3-1 .9-1 1.8"/><circle cx="12" cy="17" r="0.55" fill="currentColor" stroke="none"/></svg>
+        Help
+      </a>
+    </nav>
+
+    <nav class="course-nav" aria-label="Course navigation">
+      <p class="course-nav-title">SUBMISSION PORTAL</p>
+      <a class="course-item" href="index.html">Home</a>
+      <span class="course-item hidden-item"><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="hidden from students"><path d="M4 12s3.5-6 8-6 8 6 8 6-3.5 6-8 6-8-6-8-6z"/><path d="M4.5 4.5l15 15"/></svg>Announcements</span>
+      <a class="course-item active" href="login.html" aria-current="page">Assignments</a>
+      <a class="course-item" href="#">Discussions</a>
+      <a class="course-item" href="#">Grades</a>
+      <a class="course-item" href="#">People</a>
+      <a class="course-item" href="#">Pages</a>
+      <a class="course-item" href="#">Files</a>
+      <a class="course-item" href="#">Syllabus</a>
+      <span class="course-item hidden-item"><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="hidden from students"><path d="M4 12s3.5-6 8-6 8 6 8 6-3.5 6-8 6-8-6-8-6z"/><path d="M4.5 4.5l15 15"/></svg>Outcomes</span>
+      <a class="course-item" href="#">Rubrics</a>
+      <a class="course-item" href="#">Quizzes</a>
+      <span class="course-item hidden-item"><svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="hidden from students"><path d="M4 12s3.5-6 8-6 8 6 8 6-3.5 6-8 6-8-6-8-6z"/><path d="M4.5 4.5l15 15"/></svg>Modules</span>
+      <a class="course-item" href="#">Attendance</a>
+      <a class="course-item" href="#">Chat</a>
+      <a class="course-item" href="#">Zoom Meetings</a>
+      <a class="course-item" href="#">UO Course Surveys</a>
+      <a class="course-item" href="#">Library Research Help</a>
+      <a class="course-item" href="#">Panopto Video</a>
+      <a class="course-item" href="#">Settings</a>
+    </nav>
+
+    <div class="canvas-main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" aria-label="Menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Course</a>
+            <span class="crumb-sep">&rsaquo;</span>
+            <a href="login.html">Assignments</a>
+            <span class="crumb-sep">&rsaquo;</span>
+            <span class="crumb-current">Week 1 - Assignment 1</span>
+          </nav>
+        </div>
+        <button class="view-as">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="7" cy="14" r="3.4"/><circle cx="17" cy="14" r="3.4"/><path d="M10.4 13.6c.9-.7 2.3-.7 3.2 0M3.6 12.8l1-4.3M20.4 12.8l-1-4.3"/></svg>
+          View as Teacher
+        </button>
+      </header>
+
+      <div class="content-row">
+        <main id="site" aria-label="Assignment">
+          <div class="assignment-header">
+            <h1 class="assignment-title">Week 1 - Assignment 1</h1>
+            <div class="assignment-actions">
+              <button class="action-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16.5 4.5a2.12 2.12 0 0 1 3 3L8 19l-4 1z"/></svg>
+                Edit
+              </button>
+              <button class="kebab" aria-label="More options">&vellip;</button>
+            </div>
+          </div>
+
+          <div class="assignment-card">
+            <div class="card-banner">Take the quiz</div>
+            <form id="task-form" class="task" data-task="quiz" novalidate>
+              <section class="card-section">
+                <h3>Procrastination Survey</h3>
+                <p class="quiz-note">Worth 0 points &middot; No time limit &middot; 5 questions &middot; Results released eventually</p>
+                <div class="quiz">
+                  <fieldset class="quiz-q">
+                    <legend>1. How often do you procrastinate?</legend>
+                    <label class="quiz-opt"><input type="radio" name="q1" value="a"><span>Always</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q1" value="b"><span>Every time</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q1" value="c"><span>Yes</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q1" value="d"><span>All of the above</span></label>
+                  </fieldset>
+                  <fieldset class="quiz-q">
+                    <legend>2. I love procrastinating.</legend>
+                    <label class="quiz-opt"><input type="radio" name="q2" value="a"><span>Yes</span></label>
+                  </fieldset>
+                  <fieldset class="quiz-q">
+                    <legend>3. When do you usually start an assignment?</legend>
+                    <label class="quiz-opt"><input type="radio" name="q3" value="a"><span>The night before &mdash; I love speedrun</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q3" value="b"><span>A day after deadline</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q3" value="c"><span>What? There&rsquo;s an assignment?</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q3" value="d"><span>After asking for an extension</span></label>
+                  </fieldset>
+                  <fieldset class="quiz-q">
+                    <legend>4. What is your preferred deadline?</legend>
+                    <label class="quiz-opt"><input type="radio" name="q4" value="a"><span>Tomorrow</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q4" value="b"><span>Next semester</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q4" value="c"><span>In the next life</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q4" value="d"><span>Deadlines are more of a suggestion</span></label>
+                  </fieldset>
+                  <fieldset class="quiz-q">
+                    <legend>5. Have you finished this quiz?</legend>
+                    <label class="quiz-opt"><input type="radio" name="q5" value="a"><span>Yes</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q5" value="b"><span>Not yet</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q5" value="c"><span>I&rsquo;ll finish it later</span></label>
+                    <label class="quiz-opt"><input type="radio" name="q5" value="d"><span>Define &ldquo;finished&rdquo;</span></label>
+                  </fieldset>
+                </div>
+                <button type="submit" class="task-btn">Submit Quiz</button>
+                <p class="status" id="task-status">Not started</p>
+              </section>
+            </form>
+            <div class="resize-handle" aria-hidden="true"></div>
+          </div>
+
+          <div class="assignment-meta">
+            <span><span class="meta-label">Points</span><span class="meta-value">0</span></span>
+            <span><span class="meta-label">Submitting</span><span class="meta-value">Nothing</span></span>
+          </div>
+
+          <section class="loading-area">
+            <div class="loading-bar" role="progressbar" aria-label="Page loading progress">
+              <div id="loading-fill"></div>
+            </div>
+            <p id="loading-text">Loading&hellip; Please Wait</p>
+          </section>
+        </main>
+
+        <aside class="right-sidebar">
+          <h2 class="right-title">Related Items</h2>
+      <nav id="tracker" class="tracker" aria-label="Task progress">
+        <a class="pill" data-task="login" href="login.html">
+          <span class="pill-num">01</span>
+          <span class="pill-name">Select file</span>
+          <span class="pill-status">Not started</span>
+        </a>
+        <a class="pill" data-task="message" href="message.html">
+          <span class="pill-num">02</span>
+          <span class="pill-name">Ask for Extension</span>
+          <span class="pill-status">Not started</span>
+        </a>
+        <a class="pill current" data-task="quiz" href="quiz.html">
+          <span class="pill-num">03</span>
+          <span class="pill-name">Take the Quiz</span>
+          <span class="pill-status">Not started</span>
+        </a>
+        <a class="pill" data-task="form" href="form.html">
+          <span class="pill-num">04</span>
+          <span class="pill-name">Confirm Submission</span>
+          <span class="pill-status">Not started</span>
+        </a>
+        <a class="pill" data-task="confirm" href="confirm.html">
+          <span class="pill-num">05</span>
+          <span class="pill-name">Submit</span>
+          <span class="pill-status">Not started</span>
+        </a>
+      </nav>
+      <p class="avoided">Tasks avoided: <strong id="avoided">0</strong></p>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <aside id="chat-bubble" class="hidden" aria-live="polite">
+    <p id="chat-text">&hellip;</p>
+  </aside>
+
+  <div id="countdown" class="hidden">
+    <span id="countdown-label">Deadline</span>
+    <span id="countdown-time">40</span>
+  </div>
+
+  <div id="final-screen" class="hidden">
+    <p class="final-kicker">All tasks completed at 00:00</p>
+    <h1 class="final-title">Done.</h1>
+    <p class="final-question">But why did I wait until now?</p>
+    <p class="final-reflection">The work was always possible.<br>The waiting made it feel impossible.</p>
+    <button id="restart-btn">Wait again</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

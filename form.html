@@ -112,7 +112,9 @@
               <section class="card-section">
                 <h3>Submission Details</h3>
                 <dl class="summary">
-                  <div><dt>File selected</dt><dd id="sum-login">Not yet</dd></div>
+                  <div><dt>Files selected</dt><dd id="sum-login">Not yet</dd></div>
+                  <div><dt>Extension requested</dt><dd id="sum-message">Not yet</dd></div>
+                  <div><dt>Quiz submitted</dt><dd id="sum-quiz">Not yet</dd></div>
                   <div><dt>Details reviewed</dt><dd id="sum-form">Not yet</dd></div>
                   <div><dt>Ready to submit</dt><dd id="sum-confirm">Not yet</dd></div>
                 </dl>
@@ -144,13 +146,23 @@
           <span class="pill-name">Select file</span>
           <span class="pill-status">Not started</span>
         </a>
-        <a class="pill current" data-task="form" href="form.html">
+        <a class="pill" data-task="message" href="message.html">
           <span class="pill-num">02</span>
+          <span class="pill-name">Ask for Extension</span>
+          <span class="pill-status">Not started</span>
+        </a>
+        <a class="pill" data-task="quiz" href="quiz.html">
+          <span class="pill-num">03</span>
+          <span class="pill-name">Take the Quiz</span>
+          <span class="pill-status">Not started</span>
+        </a>
+        <a class="pill current" data-task="form" href="form.html">
+          <span class="pill-num">04</span>
           <span class="pill-name">Confirm Submission</span>
           <span class="pill-status">Not started</span>
         </a>
         <a class="pill" data-task="confirm" href="confirm.html">
-          <span class="pill-num">03</span>
+          <span class="pill-num">05</span>
           <span class="pill-name">Submit</span>
           <span class="pill-status">Not started</span>
         </a>
